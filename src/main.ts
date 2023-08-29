@@ -69,11 +69,7 @@ const pacientes: Pacientes[] = [
 const obtenPacientesAsignadosAPediatria = (
   pacientes: Pacientes[]
 ): Pacientes[] => {
-  const pediatrics: Pacientes[] = [];
-  for (let i = 0; i < pacientes.length; i++) {
-    if (pacientes[i].especialidad === "Pediatra") pediatrics.push(pacientes[i]);
-  }
-  return pediatrics;
+  return pacientes.filter((paciente) => paciente.especialidad === "Pediatra");
 };
 
 console.log(
@@ -86,12 +82,9 @@ console.log(
 const obtenPacientesAsignadosAPediatriaYMenorDeDiezAnios = (
   pacientes: Pacientes[]
 ): Pacientes[] => {
-  const pediatrics: Pacientes[] = [];
-  for (let i = 0; i < pacientes.length; i++) {
-    if (pacientes[i].especialidad === "Pediatra" && pacientes[i].edad < 10)
-      pediatrics.push(pacientes[i]);
-  }
-  return pediatrics;
+  return pacientes.filter(
+    (paciente) => paciente.especialidad === "Pediatra" && paciente.edad < 10
+  );
 };
 
 console.log(
@@ -102,38 +95,42 @@ console.log(
 // Apartado 2
 
 const activarProtocoloUrgencia = (pacientes: Pacientes[]): boolean => {
-  let activarProctolo = false;
-  let i = 0;
-  while (i < pacientes.length) {
-    if (
-      pacientes[i].frecuenciaCardiaca > 100 &&
-      pacientes[i].temperatura > 39
-    ) {
-      activarProctolo = true;
-      break;
-    }
-    i++;
-  }
-
-  return activarProctolo;
+  return (
+    pacientes.filter(
+      (paciente) =>
+        paciente.frecuenciaCardiaca > 100 && paciente.temperatura > 39
+    ).length > 0
+  );
 };
 
 console.log("Se activa el protocolo", activarProtocoloUrgencia(pacientes));
 
+// Apartado 3
+
+const reasignaPacientesAMedicoFamilia = (
+  pacientes: Pacientes[]
+): Pacientes[] => {
+  const pacientesModificados: Pacientes[] = pacientes.map((paciente) => {
+    return {
+      ...paciente,
+      especialidad:
+        paciente.especialidad === "Pediatra"
+          ? "Medico de familia"
+          : paciente.especialidad,
+    };
+  });
+  return pacientesModificados;
+};
+
+console.log("Reasignación", reasignaPacientesAMedicoFamilia(pacientes));
+
 // Apartado 4
 
 const HayPacientesDePediatria = (pacientes: Pacientes[]): boolean => {
-  let hayPacientes = false;
-  let i = 0;
-  while (i < pacientes.length) {
-    if (pacientes[i].especialidad === "Pediatra") {
-      hayPacientes = true;
-      break;
-    }
-    i++;
-  }
-
-  return hayPacientes;
+  return (
+    pacientes.filter((paciente) => paciente.especialidad === "Pediatra")
+      .length > 0
+  );
 };
 
 console.log("Hay pacientes Pediatria", HayPacientesDePediatria(pacientes));
@@ -143,23 +140,16 @@ console.log("Hay pacientes Pediatria", HayPacientesDePediatria(pacientes));
 const cuentaPacientesPorEspecialidad = (
   pacientes: Pacientes[]
 ): NumeroPacientesPorEspecialidad => {
-  const pediatra: Pacientes[] = [];
-  const medicoDeFamilia: Pacientes[] = [];
-  const cardiologia: Pacientes[] = [];
-
-  for (let i = 0; i < pacientes.length; i++) {
-    if (pacientes[i].especialidad === "Pediatra") {
-      pediatra.push(pacientes[i]);
-    } else if (pacientes[i].especialidad === "Cardiólogo") {
-      cardiologia.push(pacientes[i]);
-    } else {
-      medicoDeFamilia.push(pacientes[i]);
-    }
-  }
   const numeroPacientes: NumeroPacientesPorEspecialidad = {
-    medicoDeFamilia: medicoDeFamilia.length,
-    pediatria: pediatra.length,
-    cardiologia: cardiologia.length,
+    medicoDeFamilia: pacientes.filter(
+      (paciente) => paciente.especialidad === "Pediatra"
+    ).length,
+    pediatria: pacientes.filter(
+      (paciente) => paciente.especialidad === "Medico de familia"
+    ).length,
+    cardiologia: pacientes.filter(
+      (paciente) => paciente.especialidad === "Cardiólogo"
+    ).length,
   };
   return numeroPacientes;
 };
@@ -168,17 +158,3 @@ console.log(
   "Pacientes por especialidad",
   cuentaPacientesPorEspecialidad(pacientes)
 );
-
-// Apartado 3
-
-const reasignaPacientesAMedicoFamilia = (
-  pacientes: Pacientes[]
-): Pacientes[] => {
-  for (let i = 0; i < pacientes.length; i++) {
-    if (pacientes[i].especialidad === "Pediatra")
-      pacientes[i].especialidad = "Medico de familia";
-  }
-  return pacientes;
-};
-
-console.log("Reasignación", reasignaPacientesAMedicoFamilia(pacientes));
